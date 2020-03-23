@@ -21,7 +21,18 @@
 <body>
   <div id = "box1">
   </div>
+
+  <div id = "box2">
+  </div>
+
+  <div id = "box3">
+  </div>
+
+  <div id = "box4">
+  </div>
 </body>
+
+
 
 
 <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -100,6 +111,383 @@ var svg = d3.select('#box1').append("svg")
 
 
 
+
+
+</script>
+
+
+<script>
+
+var element_width = d3.select("#box2").node().getBoundingClientRect().width
+
+height = 600;
+width = element_width;
+margin = ({top: 120, right: 0, bottom: 50, left: 0});
+
+
+data = [
+  {year: 2017, "Programmatic" : 0.73, "Non-Programmatic": 0.27},
+  {year: 2018, "Programmatic" : 0.74, "Non-Programmatic": 0.26},
+  {year: 2019, "Programmatic" : 0.75, "Non-Programmatic": 0.25},
+  {year: 2020, "Programmatic" : 0.76, "Non-Programmatic": 0.24},
+  {year: 2021, "Programmatic" : 0.76, "Non-Programmatic": 0.24},
+  {year: 2022, "Programmatic" : 0.77, "Non-Programmatic": 0.23},
+  {year: 2023, "Programmatic" : 0.77, "Non-Programmatic": 0.23}
+  ]
+
+  stack = d3.stack()
+        .keys( ["Programmatic", "Non-Programmatic"] )
+
+  chartData = stack( data )
+
+
+colors = d3.scaleOrdinal()
+  .domain(chartData.map(d => d.key))
+  //.domain(["Programmatic", "Non-Programmatic"])
+  .range(["#81131f", "#c9c9c9"])
+
+  xScale = d3.scaleBand(
+    data.map(d => d.year),
+    [ margin.left, width - margin.right ]
+  ).padding(0.2)
+
+
+yScale = d3.scaleLinear(
+  [ 0, 1 ],
+  [ height - margin.bottom, margin.top ]
+)
+
+xAxis = d3.axisBottom(xScale)
+    .tickSizeOuter(0)
+
+
+
+
+var svg = d3.select("#box2").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+
+    groups = svg.append('g')
+        // Each layer of the stack goes in a group
+        // the group contains that layer for all countries
+        .selectAll('g')
+        .data( chartData )
+        .join('g')
+          // rects in the same layer will all have the same color, so we can put it on the group
+          // we can use the key on the layer's array to set the color
+          .style('fill', (d,i) => colors(d.key))
+
+      groups.selectAll('rect')
+        // Now we place the rects, which are the children of the layer array
+        .data(d => d)
+        .join('rect')
+          .attr('x', d => xScale(d.data.year))
+          .attr('y', d => yScale(0))
+          .attr('height', 0)
+          .attr('width', xScale.bandwidth())
+
+       groups.selectAll('rect')
+        // Now we place the rects, which are the children of the layer array
+          .transition()
+          .duration(2000)
+          .ease(d3.easeCubicOut)
+          .attr('y', d => yScale(d[1]))
+          .attr('height', d => yScale(d[0]) - yScale(d[1]))
+
+      groups.selectAll('text')
+          .data(d => d)
+          .join('text')
+          .attr("x", function(d) { return (xScale(d.data.year)+ xScale.bandwidth()/2 - 20);})
+          .attr("y", function(d) { return  yScale(d[1]) + 50;})
+          .style('font-family', 'Posterama')
+          .style('font-size' , 24)
+          .style('fill', 'transparent')
+          .transition()
+          .delay(2000)
+          .ease(d3.easeCubicOut)
+          .text(function(d) { return d3.format(".2f")(d[1] - d[0])*100+"%" ;  })
+          .style('fill', 'white')
+
+
+
+
+       svg.selectAll("years")
+          .data(data)
+          .enter()
+          .append("text")
+          .attr("x", function(d) { return (xScale(d.year) + xScale.bandwidth()/2 - 35);})
+          .attr("y", function(d) { return height - 10; })
+          .text(function(d) { return d.year; })
+          .style('font-family', 'Posterama')
+          .style('font-size' , 32)
+
+          keyz = ["Programmatic", "Non-Programmatic"]
+
+                    svg.selectAll("mydots")
+                    .data(keyz)
+                    .enter()
+                    .append("circle")
+                      .attr("cx", 35)
+                      .attr("cy", function(d,i){ return 20 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+                      .attr("r", 7)
+                      .style("fill", function(d){ return colors(d)})
+
+                  // Add one dot in the legend for each name.
+                  svg.selectAll("mylabels")
+                    .data(keyz)
+                    .enter()
+                    .append("text")
+                      .attr("x", 55)
+                      .attr("y", function(d,i){ return 20 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+                      .style("fill", function(d){ return colors(d)})
+                      .text(function(d){ return d})
+                      .attr("text-anchor", "left")
+                      .style('font-family', 'Posterama')
+                      .style("alignment-baseline", "middle")
+
+
+
+</script>
+
+<script>
+
+var element_width = d3.select("#box3").node().getBoundingClientRect().width
+
+height = 600;
+width = element_width;
+margin = ({top: 120, right: 0, bottom: 50, left: 0});
+
+
+data = [
+  {year: 2017, "Banner Advertising" : 52053, "Video Advertising": 29208, "Search Advertising": 101878, "Social Media Advertising": 62553, "Classifieds" :19778},
+  {year: 2018, "Banner Advertising" : 55860, "Video Advertising": 32224, "Search Advertising": 114776, "Social Media Advertising": 76223, "Classifieds" :20455},
+  {year: 2019, "Banner Advertising" : 59756, "Video Advertising": 35241, "Search Advertising": 127862, "Social Media Advertising": 89905, "Classifieds" :21229},
+  {year: 2020, "Banner Advertising" : 63390, "Video Advertising": 37970, "Search Advertising": 139853, "Social Media Advertising": 102292, "Classifieds" :22049},
+  {year: 2021, "Banner Advertising" : 66482, "Video Advertising": 40207, "Search Advertising": 149784, "Social Media Advertising": 112456, "Classifieds" :22853},
+  {year: 2022, "Banner Advertising" : 68902, "Video Advertising": 41890, "Search Advertising": 157326, "Social Media Advertising": 120105, "Classifieds" :23587},
+  {year: 2023, "Banner Advertising" : 70667, "Video Advertising": 43073, "Search Advertising": 162696, "Social Media Advertising": 125482, "Classifieds" :24206}
+  ]
+
+
+stack = d3.stack()
+    .keys( ["Banner Advertising", "Video Advertising", "Search Advertising", "Social Media Advertising", "Classifieds"] )
+
+chartData = stack( data )
+
+
+colors = d3.scaleOrdinal()
+    .domain([ "Banner Advertising", "Video Advertising", "Search Advertising", "Social Media Advertising", "Classifieds"])
+    .range(['#81131f', '#964851', '#a7747a', '#b89ea1', '#c9c9c9'])
+
+    xScale = d3.scaleBand(
+      data.map(d => d.year),
+      [ margin.left, width - margin.right ]
+    ).padding(0.2)
+
+
+    yScale = d3.scaleLinear(
+      [0, d3.max(stack(data), d => d3.max(d, d => d[1]))],
+      [ height - margin.bottom, margin.top ]
+    )
+
+
+    var svg = d3.select("#box3").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+
+    groups = svg.append('g')
+        // Each layer of the stack goes in a group
+        // the group contains that layer for all countries
+        .selectAll('g')
+        .data( chartData )
+        .join('g')
+          // rects in the same layer will all have the same color, so we can put it on the group
+          // we can use the key on the layer's array to set the color
+          .style('fill', (d,i) => colors(d.key))
+
+      groups.selectAll('rect')
+        // Now we place the rects, which are the children of the layer array
+        .data(d => d)
+        .join('rect')
+          .attr('x', d => xScale(d.data.year))
+          .attr('y', d => yScale(0))
+          .attr('height', 0)
+          .attr('width', xScale.bandwidth())
+
+       groups.selectAll('rect')
+        // Now we place the rects, which are the children of the layer array
+          .transition()
+          .duration(2000)
+          .ease(d3.easeCubicOut)
+          .attr('y', d => yScale(d[1]))
+          .attr('height', d => yScale(d[0]) - yScale(d[1]))
+
+      groups.selectAll('text')
+          .data(d => d)
+          .join('text')
+          .attr("x", function(d) { return (xScale(d.data.year)+ xScale.bandwidth()/2);})
+          .attr("y", function(d) { return  yScale(d[1]) + 20;})
+          .attr('text-anchor', 'middle')
+          .style('font-family', 'Posterama')
+          .style('font-size' , 20)
+          .style('fill', 'transparent')
+          .transition()
+          .delay(2000)
+          .ease(d3.easeCubicOut)
+          .text(function(d) { return d3.format(".3s")(d[1] - d[0]) ;  })
+          .style('fill', 'white')
+
+
+
+
+       svg.selectAll("years")
+          .data(data)
+          .enter()
+          .append("text")
+          .attr("x", function(d) { return (xScale(d.year) + xScale.bandwidth()/2 );})
+          .attr("y", function(d) { return height - 10; })
+          .attr('text-anchor', 'middle')
+          .text(function(d) { return d.year; })
+          .style('font-family', 'Posterama')
+          .style('font-size' , 32)
+
+keyz = ["Banner Advertising", "Video Advertising", "Search Advertising", "Social Media Advertising", "Classifieds"]
+          svg.selectAll("mydots")
+          .data(keyz)
+          .enter()
+          .append("circle")
+            .attr("cx", 30)
+            .attr("cy", function(d,i){ return 20 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("r", 7)
+            .style("fill", function(d){ return colors(d)})
+
+        // Add one dot in the legend for each name.
+        svg.selectAll("mylabels")
+          .data(keyz)
+          .enter()
+          .append("text")
+            .attr("x", 50)
+            .attr("y", function(d,i){ return 20 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+            .style("fill", function(d){ return colors(d)})
+            .text(function(d){ return d})
+            .attr("text-anchor", "left")
+            .style('font-family', 'Posterama')
+            .style("alignment-baseline", "middle")
+
+
+
+
+
+</script>
+
+<script>
+
+
+
+var div = d3.select("#box4").append("div")
+                  .style({'position': 'absolute',
+                  'display': 'none',
+                  'width': 'auto',
+                  'height': 'auto',
+                  'background': 'none repeat scroll 0 0 white',
+                  'border': '0 none',
+                  'border-radius': '8px 8px 8px 8px',
+                  'box-shadow': '-3px 3px 15px #888888',
+                  'color': 'black',
+                  'font': '12px sans-serif',
+                  'padding': '5px',
+                  'text-align': 'center'});
+
+var dataset = [
+	{ name: 'Google', total: 55.1, percent: 35.1 },
+	{ name: 'Facebook', total: 32.6, percent: 20.8 },
+	{ name: 'Amazon', total: 10.9, percent: 7.0 },
+	{ name: 'Other', total: 58.2, percent: 37.1 }
+];
+
+var width = d3.select("#box4").node().getBoundingClientRect().width,
+    height = 600,
+    radius = Math.min(width, height) / 2;
+
+var color = d3.scaleOrdinal()
+    .range(['#81131f', '#964851', '#a7747a', "#ddd"]);
+
+var arc = d3.svg.arc()
+    .outerRadius(radius - 100)
+    .innerRadius(radius - 200);
+
+var pie = d3.layout.pie()
+    .sort(null)
+	 .startAngle(1.1*Math.PI)
+    .endAngle(3.1*Math.PI)
+    .value(function(d) { return d.total; });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+
+ var g = svg.selectAll(".arc")
+      .data(pie(dataset))
+    .enter().append("g")
+      .attr("class", "arc");
+
+  g.append("path")
+	.style("fill", function(d) { return color(d.data.name); })
+  .style('stroke', '#fff')
+    .transition()
+  //  .delay(function(d,i) {	return i * 500; })
+  .duration(1500)
+	.attrTween('d', function(d) {
+		var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
+		return function(t) {
+			d.endAngle = i(t);
+			return arc(d)
+			}
+		});
+
+  g.append("text")
+      .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+      .attr("dy", ".35em")
+      .style('font-family', 'Posterama')
+      .style('text-anchor', 'middle')
+      .style('fill', 'white')
+      .style('font-size', 24)
+	  .transition()
+	  .delay(1500)
+      .text(function(d) { return d.data.total+ 'B'; });
+
+    g.append("text")
+          .attr("transform", function(d) { var c = arc.centroid(d);
+        return "translate(" + c[0]*1.75 +"," + c[1]*1.75 + ")";})
+          .attr("dy", ".35em")
+          .style('font-family', 'Posterama')
+          .style('text-anchor', 'middle')
+          .style('fill', 'black')
+          .style('font-size', 24)
+          .text(function(d) { return d.data.name ; });
+
+
+
+	d3.selectAll("path").on("mousemove", function(d) {
+	    div.style("left", d3.event.pageX+10+"px");
+		  div.style("top", d3.event.pageY-25+"px");
+		  div.style("display", "inline-block");
+    div.html("<b>"+(d.data.name)+"</b><br>"+(d.data.total) + "B" + "<br>"+(d.data.percent) + "%");
+});
+
+d3.selectAll("path").on("mouseout", function(d){
+    div.style("display", "none");
+});
+
+
+//d3.select("body").transition().style("background-color", "#d3d3d3");
+function type(d) {
+  d.total = +d.total;
+  return d;
+}
 
 
 </script>
